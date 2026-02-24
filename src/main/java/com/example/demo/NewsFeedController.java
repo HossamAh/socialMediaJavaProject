@@ -45,7 +45,7 @@ public class NewsFeedController {
         Window window = imageLabel.getScene().getWindow();
         java.io.File file = fileChooser.showOpenDialog(window);
         if (file != null) {
-            selectedImagePath = file.getAbsolutePath();
+            selectedImagePath = file.getPath();
             imageLabel.setText(file.getName());
         } else {
             selectedImagePath = null;
