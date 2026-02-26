@@ -65,4 +65,8 @@ public class Comment {
     public void setAuthorUsername(String authorUsername) {
         this.authorUsername = authorUsername;
     }
+    @Override
+    public String toString() {
+        return authorUsername + ": " + content;
+    }
 }

@@ -1,18 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.Label?>
-<VBox spacing="10" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.NewsFeedController">
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.NewsFeedController">
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
-    <TextArea fx:id="postTextArea" promptText="What's on your mind?" prefRowCount="3" />
-    <Button text="Choose Image" onAction="#onChooseImage" />
+    <TextArea fx:id="postTextArea" prefRowCount="3" promptText="What's on your mind?" />
+    <ImageView fx:id="postImageViewer" pickOnBounds="true" preserveRatio="true">
+
+    </ImageView>
+    <Button onAction="#onChooseImage" text="Choose Image" />
     <Label fx:id="imageLabel" text="No image selected" />
-    <Button text="Post" onAction="#onPost" />
-    <ListView fx:id="postsList" />
+   <HBox spacing="16.0">
+      <children>
+          <Button onAction="#onPost" text="Post" />
+         <ComboBox fx:id="privacyComboBox" prefWidth="150.0" promptText="select Privacy" />
+      </children>
+   </HBox>
+   <ScrollPane fx:id="scrollPane" fitToWidth="true" prefHeight="400.0" prefWidth="600.0">
+      <content>
+        <VBox fx:id="postsVBox" spacing="5" style="-fx-border-color: transparent;" />
+      </content>
+    </ScrollPane>
 </VBox>

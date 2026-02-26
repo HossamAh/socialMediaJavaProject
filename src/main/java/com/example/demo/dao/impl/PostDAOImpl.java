@@ -47,11 +47,28 @@ public class PostDAOImpl implements PostDAO {
     @Override
     public List<Post> getPostsByUserId(int userId) throws Exception {
         List<Post> posts = new ArrayList<>();
-        String sql = "SELECT p.*, u.username FROM posts p JOIN users u ON p.user_id = u.id WHERE p.user_id = ? ORDER BY p.created_at DESC";
+        String sql = "CALL GetPostsOfUser(?)";
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                posts.add(extractPost(rs));
+            }
+        }
+        return posts;
+    }
+    @Override
+    public List<Post> getPostsByUserIdPaginated(int userId, int page, int pageSize) throws Exception {
+        List<Post> posts = new ArrayList<>();
+        String sql = "CALL GetPostsOfUserPaginated(?, ?, ?)";
+        DBConnection db = new DBConnection();
+        try (Connection conn = db.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, page);
+            ps.setInt(3, pageSize);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 posts.add(extractPost(rs));

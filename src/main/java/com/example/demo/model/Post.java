@@ -76,10 +76,13 @@ public class Post {
         this.imagePath = imagePath;
     }
 
+    public int getPostLikes(){
+        return 0;
+    }
     @Override
     public String toString() {
         String time = createdAt != null ? createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : "";
-        String img = imagePath != null && !imagePath.isEmpty() ? "[Image: " + imagePath + "]\n" : "";
-        return String.format("%s (%s)\n%s%s", authorUsername, time, img, content);
+//        String img = imagePath != null && !imagePath.isEmpty() ? "[Image: " + imagePath + "]\n" : "";
+        return String.format("%s (%s)\n%s", authorUsername, time, content);
     }
 }
