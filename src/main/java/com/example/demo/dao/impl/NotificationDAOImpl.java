@@ -1,99 +1,74 @@
 package com.example.demo.dao.impl;
 
+import com.example.demo.Database.DBConnection;
 import com.example.demo.dao.NotificationDAO;
 import com.example.demo.model.Notification;
-import com.example.demo.Database.DBConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationDAOImpl implements NotificationDAO {
+
     @Override
-    public Notification createNotification(Notification notification) throws Exception {
-        String sql = "INSERT INTO notifications (user_id, type, content) VALUES (?, ?, ?)";
+    public void addNotification(Notification notification) throws Exception {
+
+        String sql = "INSERT INTO notifications (user_id, message, type) VALUES (?, ?, ?)";
+
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, notification.getUserId());
-            ps.setString(2, notification.getType());
-            ps.setString(3, notification.getContent());
+            ps.setString(2, notification.getMessage());
+            ps.setString(3, notification.getType());
+
             ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                notification.setId(rs.getInt(1));
-            }
         }
-        return notification;
     }
 
     @Override
-    public Notification getNotificationById(int id) throws Exception {
-        String sql = "SELECT * FROM notifications WHERE id = ?";
-        DBConnection db = new DBConnection();
-        try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return extractNotification(rs);
-            }
-        }
-        return null;
-    }
+    public List<Notification> getUserNotifications(int userId) throws Exception {
 
-    @Override
-    public List<Notification> getNotificationsByUserId(int userId) throws Exception {
-        List<Notification> notifications = new ArrayList<>();
+        List<Notification> list = new ArrayList<>();
         String sql = "SELECT * FROM notifications WHERE user_id = ? ORDER BY created_at DESC";
+
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                notifications.add(extractNotification(rs));
+                Notification n = new Notification();
+                n.setId(rs.getInt("id"));
+                n.setUserId(rs.getInt("user_id"));
+                n.setMessage(rs.getString("message"));
+                n.setType(rs.getString("type"));
+                n.setRead(rs.getBoolean("is_read"));
+                n.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+
+                list.add(n);
             }
         }
-        return notifications;
+
+        return list;
     }
 
     @Override
-    public Notification updateNotification(Notification notification) throws Exception {
-        String sql = "UPDATE notifications SET type = ?, content = ? WHERE id = ?";
+    public void markAsRead(int notificationId) throws Exception {
+
+        String sql = "UPDATE notifications SET is_read = true WHERE id = ?";
+
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, notification.getType());
-            ps.setString(2, notification.getContent());
-            ps.setInt(3, notification.getId());
+
+            ps.setInt(1, notificationId);
             ps.executeUpdate();
         }
-        return notification;
-    }
-
-    @Override
-    public boolean deleteNotification(int id) throws Exception {
-        String sql = "DELETE FROM notifications WHERE id = ?";
-        DBConnection db = new DBConnection();
-        try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            return ps.executeUpdate() > 0;
-        }
-    }
-
-    private Notification extractNotification(ResultSet rs) throws SQLException {
-        Notification notification = new Notification();
-        notification.setId(rs.getInt("id"));
-        notification.setUserId(rs.getInt("user_id"));
-        notification.setType(rs.getString("type"));
-        notification.setContent(rs.getString("content"));
-        Timestamp ts = rs.getTimestamp("created_at");
-        if (ts != null) {
-            notification.setCreatedAt(ts.toLocalDateTime());
-        }
-        return notification;
     }
 }

@@ -1,19 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.HomeController">
-    <top>
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.demo.HomeController">
+
+    <center>
         <TabPane>
+
             <tabs>
+
                 <Tab text="News Feed">
-                    <fx:include source="newsfeed.fxml" />
+                    <fx:include source="newsfeed.fxml"/>
                 </Tab>
+
                 <Tab text="Profile">
-                    <fx:include source="profile.fxml" />
+                    <fx:include source="profile.fxml"/>
                 </Tab>
+
+                <Tab text="Friends">
+<!--                    <fx:include source="friends.fxml"/>-->
+                    <VBox spacing="10" alignment="CENTER"
+                          xmlns="http://javafx.com/javafx/17"
+                          xmlns:fx="http://javafx.com/fxml/1">
+
+                        <Label text="Friends List"/>
+                        <ListView fx:id="friendsList" prefHeight="120"/>
+
+                        <Label text="Pending Requests"/>
+                        <ListView fx:id="pendingList" prefHeight="120"/>
+
+                        <TextField fx:id="friendIdField" promptText="Enter Friend ID"/>
+
+                        <Button text="Add Friend" onAction="#handleAddFriend"/>
+
+                        <Button text="Accept Selected Request" onAction="#handleAccept"/>
+                        <Button text="Reject Selected Request" onAction="#handleReject"/>
+
+                    </VBox>
+                </Tab>
+
+                <Tab text="Notifications">
+                    <fx:include source="notifications.fxml"/>
+                </Tab>
+
+                <Tab text="Search">
+                    <fx:include source="search.fxml"/>
+                </Tab>
+
             </tabs>
+
         </TabPane>
-    </top>
+    </center>
+
 </BorderPane>

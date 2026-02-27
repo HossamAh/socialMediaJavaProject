@@ -37,6 +37,7 @@ javafx {
 
 dependencies {
     implementation("com.mysql:mysql-connector-j:9.6.0")
+//    implementation("com.password4j:password4j:1.8.2")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
