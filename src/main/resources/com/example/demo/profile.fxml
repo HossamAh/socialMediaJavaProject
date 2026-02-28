@@ -26,5 +26,8 @@
     
 <!--    <Button onAction="#onChooseImage" text="Choose Image" />-->
     <Label fx:id="imageLabel" text="No image selected" />
+    <Label text="Posts:" />
+    <ListView fx:id="postsList" prefHeight="200.0" />
+
     <Button onAction="#onSaveProfile" text="Save" />
 </VBox>

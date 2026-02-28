@@ -85,10 +85,8 @@ public class HomeController {
             int friendId = Integer.parseInt(friendIdField.getText());
             int currentUserId = Session.getCurrentUser().getId();
 
-            // إرسال طلب الصداقة
             friendDAO.sendFriendRequest(currentUserId, friendId);
 
-            // 👇 إنشاء Notification للمستخدم اللي استلم الطلب
             NotificationDAO notificationDAO = new NotificationDAOImpl();
 
             Notification notification = new Notification(

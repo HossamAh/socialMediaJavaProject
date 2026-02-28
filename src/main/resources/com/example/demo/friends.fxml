@@ -1,0 +1,24 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+
+<!--<?import javafx.scene.control.*?>-->
+<!--<?import javafx.scene.layout.VBox?>-->
+
+<!--<VBox spacing="10" alignment="CENTER"-->
+<!--      xmlns="http://javafx.com/javafx/17"-->
+<!--      xmlns:fx="http://javafx.com/fxml/1"-->
+<!--      fx:controller="com.example.demo.HomeController">-->
+
+<!--    <Label text="Friends List"/>-->
+<!--    <ListView fx:id="friendsList" prefHeight="120"/>-->
+
+<!--    <Label text="Pending Requests"/>-->
+<!--    <ListView fx:id="pendingList" prefHeight="120"/>-->
+
+<!--    <TextField fx:id="friendIdField" promptText="Enter Friend ID"/>-->
+
+<!--    <Button text="Add Friend" onAction="#handleAddFriend"/>-->
+
+<!--    <Button text="Accept Selected Request" onAction="#handleAccept"/>-->
+<!--    <Button text="Reject Selected Request" onAction="#handleReject"/>-->
+
+<!--</VBox>-->

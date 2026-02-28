@@ -14,12 +14,12 @@ public class NotificationDAOImpl implements NotificationDAO {
 
     @Override
     public void addNotification(Notification notification) throws Exception {
-
+        System.out.println("Adding notification: " + notification.getMessage());
         String sql = "INSERT INTO notifications (user_id, message, type) VALUES (?, ?, ?)";
 
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, notification.getUserId());
             ps.setString(2, notification.getMessage());
@@ -37,7 +37,7 @@ public class NotificationDAOImpl implements NotificationDAO {
 
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
@@ -54,7 +54,6 @@ public class NotificationDAOImpl implements NotificationDAO {
                 list.add(n);
             }
         }
-
         return list;
     }
 
@@ -65,7 +64,7 @@ public class NotificationDAOImpl implements NotificationDAO {
 
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+                PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, notificationId);
             ps.executeUpdate();

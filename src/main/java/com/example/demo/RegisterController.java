@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.dao.UserDAO;
 import com.example.demo.dao.impl.UserDAOImpl;
 import com.example.demo.model.User;
 import javafx.fxml.FXML;
@@ -9,11 +10,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import com.example.demo.dao.UserDAO;
-import com.example.demo.model.User;
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 import java.io.IOException;
 
 public class RegisterController {
+
     @FXML
     private TextField usernameField;
 
@@ -22,38 +24,55 @@ public class RegisterController {
 
     @FXML
     private PasswordField passwordField;
+
     @FXML
     private PasswordField confirmPasswordField;
 
     @FXML
     private Label errorText;
 
-
     private UserDAO userDAO = new UserDAOImpl();
 
     @FXML
-    protected void onRegisterButtonClick() throws IOException {
-        // rudimentary registration: create user and return to login
+    protected void onRegisterButtonClick() {
+
         String username = usernameField.getText().trim();
         String email = emailField.getText().trim();
-        String pass = passwordField.getText();
-        String confirm = confirmPasswordField.getText();
-        if (!username.isEmpty() && pass.equals(confirm)) {
-            // in real app persist user
-            User user =new User(username,email,pass);
-            try {
-                user = userDAO.createUser(user);
-                Session.setCurrentUser(user);
-            } catch (Exception e) {
-                errorText.setText("error in sign up new user");
-                throw new RuntimeException(e);
-            }
-            System.out.println("Registered user: " + username);
+        String password = passwordField.getText();
+        String confirmPassword = confirmPasswordField.getText();
+
+        // validation
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            errorText.setText("All fields are required");
+            return;
         }
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
-        Scene scene = new Scene(loader.load(), 400, 300);
-        Stage stage = (Stage) usernameField.getScene().getWindow();
-        stage.setScene(scene);
+
+        // validation
+        if (!password.equals(confirmPassword)) {
+            errorText.setText("Passwords do not match");
+            return;
+        }
+
+        try {
+
+            String hashedPassword = BCrypt.withDefaults()
+                    .hashToString(12, password.toCharArray());
+
+            User user = new User(username, email, hashedPassword);
+
+            userDAO.createUser(user);
+
+            System.out.println("User registered successfully: " + username);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
+            Scene scene = new Scene(loader.load(), 400, 300);
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            stage.setScene(scene);
+
+        } catch (Exception e) {
+            errorText.setText("Error while creating user");
+            e.printStackTrace();
+        }
     }
 
     @FXML

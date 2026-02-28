@@ -1,49 +1,25 @@
 package com.example.demo.model;
 
-import java.time.LocalDateTime;
-
 public class FriendRequest {
+
     private int id;
-    private int senderId;
-    private int receiverId;
-    private LocalDateTime createdAt;
+    private String username;
 
-    public FriendRequest() {}
-
-    public FriendRequest(int senderId, int receiverId) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+    public FriendRequest(int id, String username) {
+        this.id = id;
+        this.username = username;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public String getUsername() {
+        return username;
     }
 
-    public int getSenderId() {
-        return senderId;
-    }
-
-    public void setSenderId(int senderId) {
-        this.senderId = senderId;
-    }
-
-    public int getReceiverId() {
-        return receiverId;
-    }
-
-    public void setReceiverId(int receiverId) {
-        this.receiverId = receiverId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    @Override
+    public String toString() {
+        return username;
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="6" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo.PostCellController">
+    <padding>
+        <Insets bottom="6" left="6" right="6" top="6" />
+    </padding>
+    <Label fx:id="contentLabel" wrapText="true" />
+    <ImageView fx:id="postImage" pickOnBounds="true" preserveRatio="true">
+
+    </ImageView>
+    <HBox spacing="8">
+        <Button fx:id="likeButton" text="Like" />
+        <Label fx:id="likesLabel" text="0" />
+        <Button fx:id="commentButton" text="Comment" />
+    </HBox>
+    <ListView fx:id="commentsList" editable="true" prefHeight="131.0" prefWidth="478.0" VBox.vgrow="ALWAYS" />
+</VBox>

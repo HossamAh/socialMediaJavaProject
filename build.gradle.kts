@@ -1,23 +1,21 @@
 plugins {
     java
     application
-    id("org.javamodularity.moduleplugin") version "1.8.15"
     id("org.openjfx.javafxplugin") version "0.0.13"
-    id("org.beryx.jlink") version "2.25.0"
+    id("org.beryx.jlink") version "2.26.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.example"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
 }
 
-val junitVersion = "5.12.1"
-
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -27,7 +25,26 @@ tasks.withType<JavaCompile> {
 
 application {
     mainModule.set("com.example.demo")
-    mainClass.set("com.example.demo.HelloApplication")
+    mainClass.set("com.example.demo.Launcher")
+}
+
+// include Main-Class in jar manifest so the built jar can be executed directly
+tasks.named<Jar>("jar") {
+    manifest {
+        attributes("Main-Class" to application.mainClass.get())
+    }
+}
+
+// Runnable fat JAR including JavaFX, MySQL driver, and all dependencies
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveClassifier.set("all")
+    manifest {
+        attributes("Main-Class" to application.mainClass.get())
+    }
+    // Exclude module descriptors so the JAR runs on classpath (not module path)
+    exclude("module-info.class")
+    exclude("META-INF/versions/*/module-info.class")
+    mergeServiceFiles()
 }
 
 javafx {
@@ -37,17 +54,10 @@ javafx {
 
 dependencies {
     implementation("com.mysql:mysql-connector-j:9.6.0")
-//    implementation("com.password4j:password4j:1.8.2")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+    implementation("at.favre.lib:bcrypt:0.10.2")
 }
 
 jlink {
-    imageZip.set(layout.buildDirectory.file("/distributions/app-${javafx.platform.classifier}.zip"))
     options.set(listOf("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"))
     launcher {
         name = "app"

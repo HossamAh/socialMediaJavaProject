@@ -12,4 +12,5 @@ public interface UserDAO {
     User updateUser(User user) throws Exception;
     boolean deleteUser(int id) throws Exception;
     boolean authenticate(String username, String password) throws Exception;
+    List<User> searchUsers(String keyword) throws Exception;
 }
