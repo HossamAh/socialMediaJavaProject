@@ -47,9 +47,51 @@ public class PostDAOImpl implements PostDAO {
     @Override
     public List<Post> getPostsByUserId(int userId) throws Exception {
         List<Post> posts = new ArrayList<>();
-        String sql = "CALL GetPostsOfUser(?)";
+        String sql = """
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM users u
+                JOIN friends f ON u.id = f.friend_id
+                JOIN posts p ON u.id = p.user_id
+                WHERE f.user_id = ? AND p.privacy IN ('friends', 'public')
+                UNION
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM users u
+                JOIN friends f ON u.id = f.user_id
+                JOIN posts p ON u.id = p.user_id
+                WHERE f.friend_id = ? AND p.privacy IN ('friends', 'public')
+                UNION
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.user_id = ?
+                UNION
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.privacy = 'public'
+                ORDER BY created_at DESC
+                """;
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.setInt(2, userId);
+            ps.setInt(3, userId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                posts.add(extractPost(rs));
+            }
+        }
+        return posts;
+    }
+
+    @Override
+    public List<Post> getPostsCreatedByUserId(int userId) throws Exception {
+        List<Post> posts = new ArrayList<>();
+        String sql = "SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username " +
+                "FROM posts p JOIN users u ON p.user_id = u.id " +
+                "WHERE p.user_id = ? ORDER BY p.created_at DESC";
+        try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
@@ -59,16 +101,44 @@ public class PostDAOImpl implements PostDAO {
         }
         return posts;
     }
+
     @Override
     public List<Post> getPostsByUserIdPaginated(int userId, int page, int pageSize) throws Exception {
         List<Post> posts = new ArrayList<>();
-        String sql = "CALL GetPostsOfUserPaginated(?, ?, ?)";
+        String sql = """
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM users u
+                JOIN friends f ON u.id = f.friend_id
+                JOIN posts p ON u.id = p.user_id
+                WHERE f.user_id = ? AND p.privacy IN ('friends', 'public')
+                UNION
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM users u
+                JOIN friends f ON u.id = f.user_id
+                JOIN posts p ON u.id = p.user_id
+                WHERE f.friend_id = ? AND p.privacy IN ('friends', 'public')
+                UNION
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.user_id = ?
+                UNION
+                SELECT p.id, p.user_id, p.content, p.image, p.privacy, p.created_at, u.username
+                FROM posts p
+                JOIN users u ON p.user_id = u.id
+                WHERE p.privacy = 'public'
+                ORDER BY created_at DESC
+                LIMIT ? OFFSET ?
+                """;
+        int offset = Math.max(0, (page - 1) * pageSize);
         DBConnection db = new DBConnection();
         try (Connection conn = db.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, userId);
-            ps.setInt(2, page);
-            ps.setInt(3, pageSize);
+            ps.setInt(2, userId);
+            ps.setInt(3, userId);
+            ps.setInt(4, pageSize);
+            ps.setInt(5, offset);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 posts.add(extractPost(rs));

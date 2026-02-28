@@ -1,14 +1,19 @@
 package com.example.demo;
 
+import com.example.demo.dao.impl.PostDAOImpl;
+import com.example.demo.model.Post;
 import com.example.demo.dao.UserDAO;
 import com.example.demo.dao.impl.UserDAOImpl;
 import com.example.demo.model.User;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+
+import java.util.List;
 
 public class ProfileController {
 
@@ -23,10 +28,13 @@ public class ProfileController {
     private Label imageLabel;
     @FXML
     private ImageView profileImageView;
+    @FXML
+    private ListView<String> postsList;
 
     private String selectedImagePath;
 
     private UserDAO userDAO = new UserDAOImpl();
+    private final PostDAOImpl postDAO = new PostDAOImpl();
     private User user;
 
     @FXML
@@ -59,6 +67,23 @@ public class ProfileController {
                         new javafx.scene.image.Image("file:" + user.getProfilePicture())
                 );
             }
+
+            loadUserPosts();
+        }
+    }
+
+    private void loadUserPosts() {
+        if (postsList == null || user == null) {
+            return;
+        }
+
+        try {
+            List<Post> allVisiblePosts = postDAO.getPostsCreatedByUserId(user.getId());
+
+            postsList.getItems().clear();
+            allVisiblePosts.forEach(post -> postsList.getItems().add(post.getContent() + " [" + post.getPrivacy() + "]"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
